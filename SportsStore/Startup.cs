@@ -25,12 +25,10 @@ namespace SportsStore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration["Data:SportsStoreProducts:ConnectionString"]));
+                options.UseSqlServer(Configuration.GetConnectionString("SportsStoreProducts")));
 
             services.AddDbContext<AppIdentityDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration["Data:SportsStoreIdentity:ConnectionString"]));
+                options.UseSqlServer(Configuration.GetConnectionString("SportsStoreIdentity")));
 
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppIdentityDbContext>()
@@ -51,6 +49,10 @@ namespace SportsStore
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseStatusCodePages();
+            } else
+            {
+                app.UseExceptionHandler("/Error");
             }
 
             app.UseStatusCodePages();
@@ -87,12 +89,12 @@ namespace SportsStore
                 );
 
                 endpoints.MapControllerRoute(
-                    name: null,
-                    pattern: "{controller}/{action}/{id?}"
+                    name: "default",
+                    pattern: "{controller=Product}/{action=List}/{id?}"
                 );
             });
-            SeedData.EnsurePopulated(app);
-            IdentitySeedData.EnsurePopulated(app);
+            //SeedData.EnsurePopulated(app);
+            //IdentitySeedData.EnsurePopulated(app);
         }
     }
 }
